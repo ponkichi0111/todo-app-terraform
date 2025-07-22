@@ -17,13 +17,3 @@ variable "name_prefix" {
   description = "Prefix for resource names"
   type        = string
 }
-
-variable "aws_region" {
-  description = "AWS region (used for VPC endpoint)"
-  type        = string
-}
-
-variable "endpoint_sg_id" {
-  description = "Security group ID used by VPC endpoints (ECR API/DKR)"
-  type        = string
-}

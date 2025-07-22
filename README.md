@@ -16,3 +16,9 @@
   region = ap-northeast-1
   output = json
   ```
+
+3. **SSOに接続**
+```
+export AWS_PROFILE=terraform-admin
+aws sso login --profile terraform-admin
+```

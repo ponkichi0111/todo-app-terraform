@@ -31,7 +31,7 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_subnet" "private" {
-  count = length(var.private_subnet_cidrs)
+  count                   = length(var.private_subnet_cidrs)
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.private_subnet_cidrs[count.index]
   availability_zone       = data.aws_availability_zones.available.names[count.index]
@@ -74,46 +74,4 @@ resource "aws_route_table_association" "private" {
   count          = length(aws_subnet.private)
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private.id
-}
-
-# -----------------------------
-# VPC Endpoints for ECR & S3
-# -----------------------------
-resource "aws_vpc_endpoint" "ecr_api" {
-  vpc_id            = aws_vpc.main.id
-  service_name      = "com.amazonaws.${var.aws_region}.ecr.api"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = aws_subnet.private[*].id
-  security_group_ids = [var.endpoint_sg_id]
-
-  private_dns_enabled = true
-
-  tags = {
-    Name = "${var.name_prefix}-ecr-api"
-  }
-}
-
-resource "aws_vpc_endpoint" "ecr_dkr" {
-  vpc_id            = aws_vpc.main.id
-  service_name      = "com.amazonaws.${var.aws_region}.ecr.dkr"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = aws_subnet.private[*].id
-  security_group_ids = [var.endpoint_sg_id]
-
-  private_dns_enabled = true
-
-  tags = {
-    Name = "${var.name_prefix}-ecr-dkr"
-  }
-}
-
-resource "aws_vpc_endpoint" "s3" {
-  vpc_id            = aws_vpc.main.id
-  service_name      = "com.amazonaws.${var.aws_region}.s3"
-  vpc_endpoint_type = "Gateway"
-  route_table_ids   = [aws_route_table.private.id]
-
-  tags = {
-    Name = "${var.name_prefix}-s3"
-  }
 }
