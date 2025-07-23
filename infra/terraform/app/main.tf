@@ -21,3 +21,17 @@ module "endpoint" {
   endpoint_sg_id         = module.security.endpoint_sg_id
   name_prefix            = var.name_prefix
 }
+
+module "rds" {
+  source                 = "../modules/rds"
+  db_name                = var.db_name
+  db_username            = var.db_username
+  db_password            = var.db_password
+  db_engine              = var.db_engine
+  db_engine_version      = var.db_engine_version
+  db_instance_class      = var.db_instance_class
+  db_allocated_storage   = var.db_allocated_storage
+  vpc_security_group_ids = [module.security.database_sg_id]
+  db_subnet_ids          = module.vpc.private_subnet_ids
+  db_identifier          = var.db_identifier
+}
