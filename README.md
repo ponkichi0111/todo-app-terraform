@@ -1,4 +1,38 @@
 # ToDoアプリを作成
+## ディレクトリ構成
+.
+├── infra
+│   └── terraform
+│       ├── app
+│       │   ├── backend.tf
+│       │   ├── main.tf
+│       │   ├── terraform.tf
+│       │   ├── terraform.tfvars
+│       │   └── variables.tf
+│       ├── backend
+│       │   ├── main.tf
+│       │   ├── terraform.tfstate
+│       │   ├── terraform.tfstate.backup
+│       │   ├── terraform.tfvars
+│       │   └── variables.tf
+│       └── modules
+│           ├── endpoint
+│           │   ├── main.tf
+│           │   ├── output.tf
+│           │   └── variables.tf
+│           ├── rds
+│           │   ├── main.tf
+│           │   ├── output.tf
+│           │   └── variables.tf
+│           ├── security
+│           │   ├── main.tf
+│           │   ├── output.tf
+│           │   └── variables.tf
+│           └── vpc
+│               ├── main.tf
+│               ├── output.tf
+│               └── variables.tf
+└── README.md
 
 ## 事前準備
 ・アクセスキーを使用せずにterraformを実行するため、AWS IAM Identity Centerを利用する。
