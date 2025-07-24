@@ -1,5 +1,6 @@
 # ToDoアプリを作成
 ## ディレクトリ構成
+<pre>
 .
 ├── infra
 │   └── terraform
@@ -33,6 +34,7 @@
 │               ├── output.tf
 │               └── variables.tf
 └── README.md
+</pre>
 
 ## 事前準備
 ・アクセスキーを使用せずにterraformを実行するため、AWS IAM Identity Centerを利用する。
