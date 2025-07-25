@@ -35,3 +35,13 @@ module "rds" {
   db_subnet_ids          = module.vpc.private_subnet_ids
   db_identifier          = var.db_identifier
 }
+
+module "alb" {
+  source             = "../modules/alb"
+  name_prefix        = var.name_prefix
+  vpc_id             = module.vpc.vpc_id
+  public_subnet_ids  = module.vpc.public_subnet_ids
+  security_group_ids = [module.security.alb_sg_id]
+  target_port        = var.alb_target_port
+  health_check_path  = var.alb_health_check_path
+}
