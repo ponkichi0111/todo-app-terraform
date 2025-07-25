@@ -63,3 +63,15 @@ variable "db_identifier" {
   description = "Identifier for the RDS instance"
   type        = string
 }
+
+variable "alb_target_port" {
+  description = "Port on which targets receive traffic"
+  type        = number
+  default     = 80
+}
+
+variable "alb_health_check_path" {
+  description = "Health check path for ALB"
+  type        = string
+  default     = "/"
+}
