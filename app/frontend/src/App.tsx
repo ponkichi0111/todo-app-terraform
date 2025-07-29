@@ -6,13 +6,13 @@ const App = () => {
   const [todos, setTodos] = useState<{ id: number; title: string }[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/todos")
+    fetch("/todos")
       .then((res) => res.json())
       .then(setTodos);
   }, []);
 
   const handleAdd = (title: string) => {
-    fetch("http://localhost:4000/todos", {
+    fetch("/todos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title }),
@@ -22,7 +22,7 @@ const App = () => {
   };
 
   const handleDelete = (id: number) => {
-    fetch(`http://localhost:4000/todos/${id}`, { method: "DELETE" })
+    fetch(`/todos/${id}`, { method: "DELETE" })
       .then(() => setTodos((prev) => prev.filter((todo) => todo.id !== id)));
   };
 
