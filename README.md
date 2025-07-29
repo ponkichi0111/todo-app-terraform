@@ -58,3 +58,14 @@
 export AWS_PROFILE=terraform-admin
 aws sso login --profile terraform-admin
 ```
+
+
+## ToDoアプリ作成
+DBユーザーに CREATE DATABASE 権限を付与  
+・Prisma がシャドウDBを自動作成できるようするため  
+`docker compose exec db mysql -uroot -proot`  
+```
+GRANT ALL PRIVILEGES ON *.* TO 'user'@'%';
+FLUSH PRIVILEGES;
+EXIT;
+```
