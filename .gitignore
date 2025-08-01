@@ -2,8 +2,6 @@
 .terraform/
 *.tfvars
 *.tfstate.backup
-.env.db
-.env.development
-app/node_modules/
-app/package-lock.json
-app/package.json
+.DS_Store
+*.env
+*.env.*
