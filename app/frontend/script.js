@@ -19,7 +19,6 @@ async function addTask() {
   const task = taskInput.value.trim(); // 前後の空白を削除
 
   if (!task) { // 空文字やスペースのみの場合
-    // alert('タスクを入力してください');
     return;
   }
 
