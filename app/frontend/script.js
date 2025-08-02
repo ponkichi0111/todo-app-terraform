@@ -16,13 +16,19 @@ async function fetchTodos() {
 
 async function addTask() {
   const taskInput = document.getElementById('taskInput');
-  const task = taskInput.value;
+  const task = taskInput.value.trim(); // 前後の空白を削除
+
+  if (!task) { // 空文字やスペースのみの場合
+    // alert('タスクを入力してください');
+    return;
+  }
+
   await fetch('/todos', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ task })
   });
-  taskInput.value = ''; // 入力フィールドをクリア
+  taskInput.value = '';
   fetchTodos();
 }
 
