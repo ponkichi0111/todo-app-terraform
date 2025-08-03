@@ -75,3 +75,9 @@ variable "alb_health_check_path" {
   type        = string
   default     = "/"
 }
+
+variable "cluster_name" {
+  description = "Name of the ECS cluster"
+  type        = string
+  default     = "todo-ecs-cluster"
+}
