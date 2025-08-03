@@ -2,11 +2,30 @@
 ## ディレクトリ構成
 <pre>
 .
+├── app
+│   ├── backend
+│   │   ├── Dockerfile
+│   │   ├── package.json
+│   │   └── src
+│   │       ├── index.js
+│   │       ├── models
+│   │       │   └── db.js
+│   │       └── routes
+│   │           └── todos.js
+│   ├── docker-compose.yml
+│   ├── frontend
+│   │   ├── Dockerfile
+│   │   ├── index.html
+│   │   ├── nginx.conf
+│   │   └── script.js
+│   └── mysql
+│       └── init.sql
 ├── infra
 │   └── terraform
 │       ├── app
 │       │   ├── backend.tf
 │       │   ├── main.tf
+│       │   ├── output.tf
 │       │   ├── terraform.tf
 │       │   ├── terraform.tfvars
 │       │   └── variables.tf
@@ -16,24 +35,53 @@
 │       │   ├── terraform.tfstate.backup
 │       │   ├── terraform.tfvars
 │       │   └── variables.tf
-│       └── modules
-│           ├── endpoint
-│           │   ├── main.tf
-│           │   ├── output.tf
-│           │   └── variables.tf
-│           ├── rds
-│           │   ├── main.tf
-│           │   ├── output.tf
-│           │   └── variables.tf
-│           ├── security
-│           │   ├── main.tf
-│           │   ├── output.tf
-│           │   └── variables.tf
-│           └── vpc
-│               ├── main.tf
-│               ├── output.tf
-│               └── variables.tf
-└── README.md
+│       ├── modules
+│       │   ├── alb
+│       │   │   ├── main.tf
+│       │   │   ├── output.tf
+│       │   │   └── variables.tf
+│       │   ├── ecr
+│       │   │   ├── main.tf
+│       │   │   ├── output.tf
+│       │   │   └── variables.tf
+│       │   ├── ecs
+│       │   │   ├── main.tf
+│       │   │   ├── output.tf
+│       │   │   └── variables.tf
+│       │   ├── endpoint
+│       │   │   ├── main.tf
+│       │   │   ├── output.tf
+│       │   │   └── variables.tf
+│       │   ├── iam
+│       │   │   ├── main.tf
+│       │   │   ├── output.tf
+│       │   │   └── variables.tf
+│       │   ├── rds
+│       │   │   ├── main.tf
+│       │   │   ├── output.tf
+│       │   │   └── variables.tf
+│       │   ├── secrets
+│       │   │   ├── main.tf
+│       │   │   ├── output.tf
+│       │   │   └── variables.tf
+│       │   ├── security
+│       │   │   ├── main.tf
+│       │   │   ├── output.tf
+│       │   │   └── variables.tf
+│       │   └── vpc
+│       │       ├── main.tf
+│       │       ├── output.tf
+│       │       └── variables.tf
+│       └── shared
+│           ├── backend.tf
+│           ├── main.tf
+│           ├── terraform.tf
+│           ├── terraform.tfvars
+│           └── variables.tf
+├── README.md
+└── scripts
+    ├── gen-service-def.sh
+    └── gen-task-def.sh
 </pre>
 
 ## 事前準備
@@ -69,3 +117,11 @@ GRANT ALL PRIVILEGES ON *.* TO 'user'@'%';
 FLUSH PRIVILEGES;
 EXIT;
 ```
+
+
+## Ecsporesso構築
+タスク/サービスはjson形式で記載。
+ecspresso は内部的に YAML を読み込んでから JSON に変換して処理します（なぜなら AWS の API は JSON を受け取るため）。
+yamlからjsonjに変換する際に、構文的には正しくても ecspresso 側が誤解釈する値がある。
+YAML の中に - を含む値などが該当する。
+基本的にawsのリソースIDは[-]が含まれるケースが多いため、jsonを使用

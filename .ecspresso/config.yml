@@ -1,0 +1,5 @@
+region: ap-northeast-1
+cluster: todo-cluster
+service: todo-service
+task_definition: task-def.json
+service_definition: service-def.json
