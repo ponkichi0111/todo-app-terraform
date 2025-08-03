@@ -18,4 +18,6 @@ module "iam" {
 
   db_user_arn     = module.secrets.db_user_arn
   db_password_arn = module.secrets.db_password_arn
+
+  ecs_app_task_role_name = var.ecs_app_task_role_name
 }
