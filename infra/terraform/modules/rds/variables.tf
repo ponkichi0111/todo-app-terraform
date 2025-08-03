@@ -4,12 +4,12 @@ variable "db_name" {
 }
 
 variable "db_username" {
-  description = "Master username for the database"
+  description = "Database master username (injected from Secrets Manager)"
   type        = string
 }
 
 variable "db_password" {
-  description = "Master password for the database"
+  description = "Database master password (injected from Secrets Manager)"
   type        = string
   sensitive   = true
 }
