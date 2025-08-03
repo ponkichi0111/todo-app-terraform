@@ -45,3 +45,8 @@ module "alb" {
   target_port        = var.alb_target_port
   health_check_path  = var.alb_health_check_path
 }
+
+module "ecs" {
+  source          = "../modules/ecs"
+  cluster_name    = var.cluster_name
+}
