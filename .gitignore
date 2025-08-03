@@ -5,3 +5,5 @@
 .DS_Store
 *.env
 *.env.*
+task-def.json
+service-def.json
