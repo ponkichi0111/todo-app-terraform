@@ -2,6 +2,14 @@
 ## ディレクトリ構成
 <pre>
 .
+├── .github
+│   └── pull_request_template.md
+├── .ecspresso
+│   ├── config.yml
+│   ├── service-def.json
+│   ├── service-def.json.tpl
+│   ├── task-def.json
+│   └── task-def.json.tpl
 ├── app
 │   ├── backend
 │   │   ├── Dockerfile
