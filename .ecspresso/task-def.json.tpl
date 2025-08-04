@@ -2,7 +2,7 @@
   "family": "todo-app-task",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "512",
-  "memory": "1024",
+  "memory": "2048",
   "networkMode": "awsvpc",
   "executionRoleArn": "${IAM_ROLE_TASK_EXECUTION}",
   "taskRoleArn": "${IAM_ROLE_APP_TASK}",
