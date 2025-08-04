@@ -1,5 +1,8 @@
 # ToDoアプリを作成
+
 ## ディレクトリ構成
+<details>
+<summary>クリックして展開</summary>
 <pre>
 .
 ├── .github
@@ -91,6 +94,7 @@
     ├── gen-service-def.sh
     └── gen-task-def.sh
 </pre>
+</details>
 
 ## 事前準備
 ・アクセスキーを使用せずにterraformを実行するため、AWS IAM Identity Centerを利用する。
@@ -126,6 +130,9 @@ FLUSH PRIVILEGES;
 EXIT;
 ```
 
+## ECRプッシュ
+・イメージはARMアーキテクチャ(amd64)にする必要がある
+`docker build --platform linux/amd64 -t todo-backend .`  
 
 ## Ecsporesso構築
 タスク/サービスはjson形式で記載。
@@ -133,3 +140,11 @@ ecspresso は内部的に YAML を読み込んでから JSON に変換して処�
 yamlからjsonjに変換する際に、構文的には正しくても ecspresso 側が誤解釈する値がある。
 YAML の中に - を含む値などが該当する。
 基本的にawsのリソースIDは[-]が含まれるケースが多いため、jsonを使用
+
+・ecspressoのデプロイ
+
+・サービス削除  
+1.サービスをスケールダウン（desiredCount = 0）  
+`ecspresso scale --tasks=0 --config .ecspresso/config.yml`  
+2.サービス削除  
+`ecspresso delete --config .ecspresso/config.yml`  
