@@ -147,4 +147,63 @@ YAML の中に - を含む値などが該当する。
 1.サービスをスケールダウン（desiredCount = 0）  
 `ecspresso scale --tasks=0 --config .ecspresso/config.yml`  
 2.サービス削除  
-`ecspresso delete --config .ecspresso/config.yml`  
+`ecspresso delete --config .ecspresso/config.yml`
+
+## 作成したリソース情報
+
+### AWSリソース
+#### VPC
+- **名前**: todo-vpc
+- **CIDR**: `10.0.0.0/16`
+- **サブネット**
+  - **パブリックサブネット**: `10.0.1.0/24`, `10.0.2.0/24`
+  - **プライベートサブネット**: `10.0.3.0/24`, `10.0.4.0/24`
+
+#### RDS
+- **名前**: todo-db
+- **エンジン**: MySQL 8.0
+- **インスタンスクラス**: `db.t4g.micro`
+- **ストレージ**: 20GB
+- **エンドポイント**: `<RDSエンドポイント>`
+- **セキュリティグループ**: `todo-database-sg`
+
+#### ECS
+- **クラスター名**: todo-ecs-cluster
+- **タスク定義**
+  - **名前**: todo-app-task
+  - **コンテナ**
+    - **todo-backend**
+      - **イメージ**: `todo-backend:latest`
+      - **ポート**: 4000
+    - **todo-frontend**
+      - **イメージ**: `todo-frontend:latest`
+      - **ポート**: 80
+- **サービス**
+  - **名前**: todo-service
+  - **ターゲットグループARN**: `<ターゲットグループARN>`
+  - **サブネット**: `<サブネットID1>`, `<サブネットID2>`
+  - **セキュリティグループ**: `todo-ecs-sg`
+
+#### ALB
+- **名前**: todo-alb
+- **DNS名**: `<ALB DNS名>`
+- **ターゲットグループ**
+  - **名前**: todo-tg
+  - **ポート**: 80
+  - **ヘルスチェックパス**: `/`
+
+#### ECR
+- **リポジトリ**
+  - **todo-backend**: `<ECRリポジトリURL>`
+  - **todo-frontend**: `<ECRリポジトリURL>`
+
+#### Secrets Manager
+- **DBユーザーARN**: `<DBユーザーARN>`
+- **DBパスワードARN**: `<DBパスワードARN>`
+
+### Terraformバックエンド
+- **S3バケット**: `terraform-state-todo-app-hiroyuki`
+- **DynamoDBテーブル**: `terraform-lock`
+
+### その他
+- **Region**: `ap-northeast-1`

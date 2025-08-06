@@ -50,3 +50,10 @@ module "ecs" {
   source          = "../modules/ecs"
   cluster_name    = var.cluster_name
 }
+
+module "cloudwatchlogs" {
+  source = "../modules/cloudwatchlogs"
+
+  backend_cw_name  = var.backend_cw_name
+  frontend_cw_name = var.frontend_cw_name
+}
