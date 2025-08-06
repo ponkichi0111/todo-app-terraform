@@ -1,4 +1,8 @@
 <!-- I want to review in Japanese. -->
+
+### お願い
+- Pull Request Overview、Reviewed Changes、コメントは全て必ず日本語で書いてください
+
 ## 内容
 xxxの改修をしました。
 

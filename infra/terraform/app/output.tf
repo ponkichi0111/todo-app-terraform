@@ -23,6 +23,11 @@ output "rds_endpoint" {
   value       = module.rds.rds_endpoint
 }
 
+output "alb_dns_name" {
+  description = "The DNS name of the Application Load Balancer"
+  value       = module.alb.alb_dns_name
+}
+
 output "backend_log_group_name" {
   description = "The name of the CloudWatch log group for the backend service"
   value       = module.cloudwatchlogs.backend_cw_name
