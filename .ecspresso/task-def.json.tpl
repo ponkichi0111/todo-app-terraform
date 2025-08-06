@@ -2,13 +2,21 @@
   "family": "todo-app-task",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "512",
-  "memory": "2048",
+  "memory": "1024",
   "networkMode": "awsvpc",
   "executionRoleArn": "${IAM_ROLE_TASK_EXECUTION}",
   "taskRoleArn": "${IAM_ROLE_APP_TASK}",
   "containerDefinitions": [
     {
       "name": "todo-backend",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-group": "${CLOUDWATCH_LOG_BACKEND}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
       "image": "${ECR_BACKEND_REPO_NAME}:latest",
       "portMappings": [
         {
@@ -43,6 +51,14 @@
     },
     {
       "name": "todo-frontend",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-group": "${CLOUDWATCH_LOG_FRONTEND}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
       "image": "${ECR_FRONTEND_REPO_NAME}:latest",
       "portMappings": [
         {
