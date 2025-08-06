@@ -7,3 +7,4 @@
 *.env.*
 task-def.json
 service-def.json
+nginx.conf
