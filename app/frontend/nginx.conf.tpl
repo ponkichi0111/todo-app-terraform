@@ -15,7 +15,7 @@ http {
     }
 
     location /todos {
-      proxy_pass http://${ALB_DNS}/;
+      proxy_pass http://${ALB_DNS}/todos;
     }
   }
 }
