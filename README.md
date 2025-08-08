@@ -130,7 +130,7 @@ aws sso login --profile terraform-admin
 
 
 ## ECRプッシュ
-・イメージはARMアーキテクチャ(amd64)にする必要がある  
+・イメージはx86_64アーキテクチャ(amd64)にする必要がある  
 `docker build --platform linux/amd64 -t todo-backend .`  
 
 ## Ecsporesso構築
