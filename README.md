@@ -27,7 +27,7 @@
 │   ├── frontend
 │   │   ├── Dockerfile
 │   │   ├── index.html
-│   │   ├── nginx.conf
+│   │   ├── nginx.conf.tpl
 │   │   └── script.js
 │   └── mysql
 │       └── init.sql
@@ -48,6 +48,10 @@
 │       │   └── variables.tf
 │       ├── modules
 │       │   ├── alb
+│       │   │   ├── main.tf
+│       │   │   ├── output.tf
+│       │   │   └── variables.tf
+│       │   ├── cloudwatchlogs
 │       │   │   ├── main.tf
 │       │   │   ├── output.tf
 │       │   │   └── variables.tf
@@ -86,11 +90,13 @@
 │       └── shared
 │           ├── backend.tf
 │           ├── main.tf
+│           ├── output.tf
 │           ├── terraform.tf
 │           ├── terraform.tfvars
 │           └── variables.tf
 ├── README.md
 └── scripts
+    ├── gen-nginx-conf.sh
     ├── gen-service-def.sh
     └── gen-task-def.sh
 </pre>
@@ -121,25 +127,18 @@ aws sso login --profile terraform-admin
 
 
 ## ToDoアプリ作成
-DBユーザーに CREATE DATABASE 権限を付与  
-・Prisma がシャドウDBを自動作成できるようするため  
-`docker compose exec db mysql -uroot -proot`  
-```
-GRANT ALL PRIVILEGES ON *.* TO 'user'@'%';
-FLUSH PRIVILEGES;
-EXIT;
-```
+
 
 ## ECRプッシュ
-・イメージはARMアーキテクチャ(amd64)にする必要がある
+・イメージはARMアーキテクチャ(amd64)にする必要がある  
 `docker build --platform linux/amd64 -t todo-backend .`  
 
 ## Ecsporesso構築
-タスク/サービスはjson形式で記載。
-ecspresso は内部的に YAML を読み込んでから JSON に変換して処理します（なぜなら AWS の API は JSON を受け取るため）。
-yamlからjsonjに変換する際に、構文的には正しくても ecspresso 側が誤解釈する値がある。
-YAML の中に - を含む値などが該当する。
-基本的にawsのリソースIDは[-]が含まれるケースが多いため、jsonを使用
+タスク/サービスはjson形式で記載。  
+ecspresso は内部的に YAML を読み込んでから JSON に変換して処理します（なぜなら AWS の API は JSON を受け取るため）。  
+yamlからjsonjに変換する際に、構文的には正しくても ecspresso 側が誤解釈する値がある。  
+YAML の中に - を含む値などが該当する。  
+基本的にawsのリソースIDは[-]が含まれるケースが多いため、jsonを使用  
 
 ・ecspressoのデプロイ
 
@@ -147,7 +146,7 @@ YAML の中に - を含む値などが該当する。
 1.サービスをスケールダウン（desiredCount = 0）  
 `ecspresso scale --tasks=0 --config .ecspresso/config.yml`  
 2.サービス削除  
-`ecspresso delete --config .ecspresso/config.yml`
+`ecspresso delete --config .ecspresso/config.yml`  
 
 ## 作成したリソース情報
 
