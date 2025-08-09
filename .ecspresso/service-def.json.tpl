@@ -18,7 +18,7 @@
       "securityGroups": [
         "${SECURITY_GROUP_ID}"
       ],
-      "assignPublicIp": "ENABLED"
+      "assignPublicIp": "DISABLED"
     }
   }
 }

@@ -8,3 +8,5 @@
 task-def.json
 service-def.json
 nginx.conf
+nginx-prd.conf
+nginx-dev.conf

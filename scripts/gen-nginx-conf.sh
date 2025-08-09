@@ -8,6 +8,6 @@ ALMDNS=$(terraform -chdir=infra/terraform/app output -json | jq -r '.alb_dns_nam
 # nginx.conf テンプレートを置換して nginx.conf を生成
 env \
   ALB_DNS="$ALMDNS" \
-  envsubst < app/frontend/nginx.conf.tpl > app/frontend/nginx.conf
+  envsubst < app/frontend/nginx.conf.tpl > app/frontend/nginx-prd.conf
 
-chmod 644 app/frontend/nginx.conf
+chmod 644 app/frontend/nginx-prd.conf
