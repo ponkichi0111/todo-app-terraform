@@ -20,14 +20,12 @@ services:
     env_file:
       - ./backend/.env
     ports:
-      - "3000:3000"
+      - "4000:4000"
     depends_on:
       - db
 
   frontend:
     build: ./frontend
-    volumes:
-      - ./frontend:/usr/share/nginx/html
     container_name: todo-frontend
     ports:
       - "8080:80"
