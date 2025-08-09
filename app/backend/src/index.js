@@ -1,10 +1,20 @@
+// 必要なモジュールをインポート
 const express = require('express');
 const cors = require('cors');
-const app = express();
 const todosRouter = require('./routes/todos');
 
+// Expressアプリケーションを作成
+const app = express();
+
+// ミドルウェアの設定
 app.use(cors());
 app.use(express.json());
+
+// ルートの設定
 app.use('/todos', todosRouter);
 
-app.listen(4000, () => console.log('Server running on port 4000'));
+// サーバーを起動
+const PORT = 4000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
