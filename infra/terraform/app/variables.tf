@@ -33,12 +33,6 @@ variable "db_username" {
   description = "DBユーザー名"
 }
 
-variable "db_password" {
-  type        = string
-  description = "DBパスワード"
-  sensitive   = true
-}
-
 variable "db_engine" {
   type        = string
   default     = "mysql"
@@ -92,4 +86,10 @@ variable "frontend_cw_name" {
   description = "The name of the CloudWatch log group for the frontend service"
   type        = string
   default     = "/ecs/todo-app/frontend"
+}
+
+variable "ecs_app_task_role_name" {
+  description = "Name of the ECS app task role"
+  type        = string
+  default     = "ecsAppTaskRole"
 }

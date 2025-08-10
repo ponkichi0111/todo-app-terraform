@@ -27,11 +27,11 @@
       "secrets": [
         {
           "name": "DB_USER",
-          "valueFrom": "${DB_USER}"
+          "valueFrom": "${DB_SECRET_ARN}:username::"
         },
         {
           "name": "DB_PASSWORD",
-          "valueFrom": "${DB_PASSWORD}"
+          "valueFrom": "${DB_SECRET_ARN}:password::"
         }
       ],
       "environment": [

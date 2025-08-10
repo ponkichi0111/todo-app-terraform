@@ -18,6 +18,10 @@ output "rds_db_name" {
   value       = module.rds.rds_db_name
 }
 
+output "rds_master_secret_arn" {
+  value = module.rds.rds_master_secret_arn
+}
+
 output "rds_endpoint" {
   description = "The connection endpoint for the RDS instance"
   value       = module.rds.rds_endpoint
@@ -36,4 +40,14 @@ output "backend_log_group_name" {
 output "frontend_log_group_name" {
   description = "The name of the CloudWatch log group for the frontend service"
   value       = module.cloudwatchlogs.frontend_cw_name
+}
+
+output "ecs_app_task_role_arn" {
+  description = "The name of the ECS application task role"
+  value       = module.iam.ecs_app_task_role_arn
+}
+
+output "ecs_task_execution_role_arn" {
+  description = "The name of the ECS task execution role"
+  value       = module.iam.ecs_task_execution_role_arn
 }

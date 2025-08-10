@@ -1,10 +1,5 @@
-variable "db_user_arn" {
-  description = "Secrets Manager の DBユーザー ARN"
-  type        = string
-}
-
-variable "db_password_arn" {
-  description = "Secrets Manager の DBパスワード ARN"
+variable "rds_master_secret_arn" {
+  description = "ARN of the RDS secret"
   type        = string
 }
 

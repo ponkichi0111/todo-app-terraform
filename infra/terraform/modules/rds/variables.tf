@@ -8,12 +8,6 @@ variable "db_username" {
   type        = string
 }
 
-variable "db_password" {
-  description = "Database master password (injected from Secrets Manager)"
-  type        = string
-  sensitive   = true
-}
-
 variable "db_engine" {
   description = "The database engine to use (e.g., mysql or postgres)"
   type        = string
