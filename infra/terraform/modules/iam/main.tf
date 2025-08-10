@@ -17,10 +17,7 @@ resource "aws_iam_policy" "ecs_secrets_access" {
     Statement = [{
       Effect = "Allow",
       Action = ["secretsmanager:GetSecretValue"],
-      Resource = [
-        var.db_user_arn,
-        var.db_password_arn
-      ]
+      Resource = [var.rds_master_secret_arn]
     }]
   })
 }
