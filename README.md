@@ -132,7 +132,7 @@ aws sso login --profile terraform-admin
 
 
 ## ECRプッシュ
-イメージはARMアーキテクチャ(amd64)にする必要がある  
+イメージはx86_64アーキテクチャ(amd64)にする必要がある  
 ・バックエンド  
 `docker build --platform linux/amd64 -t todo-backend .`  
 ・フロントエンド(本番環境のnginx.confを設定するため、環境変数を設定する)  
