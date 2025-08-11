@@ -7,7 +7,11 @@ const todosRouter = require('./routes/todos');
 const app = express();
 
 // ミドルウェアの設定
-app.use(cors());
+app.use(cors({
+  origin: '*',  // 本番環境では適切なオリジンに制限すべき
+  methods: ['GET', 'POST', 'DELETE'],
+  allowedHeaders: ['Content-Type']
+}));
 app.use(express.json());
 
 // ルートの設定
