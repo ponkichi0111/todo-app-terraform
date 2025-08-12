@@ -1,6 +1,9 @@
 events {}
 
 http {
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
   server {
     listen 80;
 
@@ -18,4 +21,10 @@ http {
       proxy_pass http://127.0.0.1:4000;
     }
   }
+  gzip on;
+  gzip_types text/plain text/css application/javascript application/json text/xml application/xml image/svg+xml;
+  gzip_min_length 1000;
+  gzip_vary on;
+  gzip_comp_level 6;
+  gzip_proxied any;
 }
