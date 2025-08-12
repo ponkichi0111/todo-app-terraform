@@ -24,4 +24,7 @@ http {
   gzip on;
   gzip_types text/plain text/css application/javascript application/json;
   gzip_min_length 1000;
+  gzip_vary on;
+  gzip_comp_level 6;
+  gzip_proxied any;
 }
