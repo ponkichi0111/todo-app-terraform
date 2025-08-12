@@ -5,8 +5,8 @@ output "rds_db_name" {
 }
 
 output "rds_endpoint" {
-  description = "The connection endpoint for the RDS instance"
-  value       = aws_db_instance.mysql.endpoint
+  description = "The connection endpoint for the RDS instance without port"
+  value       = split(":", aws_db_instance.mysql.endpoint)[0]
 }
 
 output "rds_port" {
