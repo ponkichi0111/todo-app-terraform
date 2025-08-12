@@ -22,7 +22,7 @@ http {
     }
   }
   gzip on;
-  gzip_types text/plain text/css application/javascript application/json;
+  gzip_types text/plain text/css application/javascript application/json text/xml application/xml image/svg+xml;
   gzip_min_length 1000;
   gzip_vary on;
   gzip_comp_level 6;
