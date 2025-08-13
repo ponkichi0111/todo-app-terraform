@@ -1,4 +1,13 @@
-# ToDoアプリを作成
+## 概要
+ECS Fargateを使用したコンテナベースのToDoアプリケーションを作成
+
+## 技術スタック
+- フロントエンド: HTML/JavaScript + Nginx
+- バックエンド: Node.js
+- データベース: MySQL 8.0
+- インフラ: AWS (ECS, RDS, ALB)
+- IaC: Terraform
+- CI/CD: GitHub Actions
 
 ## ディレクトリ構成
 <details>
@@ -7,6 +16,9 @@
 .
 ├── .github
 │   └── pull_request_template.md
+│   └── workflows
+│       ├── app-deploy.yml
+│       └── infra-deploy.yml
 ├── .ecspresso
 │   ├── config.yml
 │   ├── service-def.json
@@ -70,6 +82,7 @@
 │       │   │   ├── output.tf
 │       │   │   └── variables.tf
 │       │   ├── iam
+│       │   │   ├── github_oidc.tf
 │       │   │   ├── main.tf
 │       │   │   ├── output.tf
 │       │   │   └── variables.tf
@@ -89,18 +102,19 @@
 │       │       ├── main.tf
 │       │       ├── output.tf
 │       │       └── variables.tf
-│       └── shared
-│           ├── backend.tf
-│           ├── main.tf
-│           ├── output.tf
-│           ├── terraform.tf
-│           ├── terraform.tfvars
-│           └── variables.tf
-├── README.md
-└── scripts
-    ├── gen-nginx-conf.sh
-    ├── gen-service-def.sh
-    └── gen-task-def.sh
+│       ├── shared
+│       │   ├── backend.tf
+│       │   ├── main.tf
+│       │   ├── output.tf
+│       │   ├── terraform.tf
+│       │   ├── terraform.tfvars
+│       │   └── variables.tf
+│       └── terraform.tfstate
+│── scripts
+│   ├── gen-nginx-conf.sh
+│   ├── gen-service-def.sh
+│   └── gen-task-def.sh
+└── README.md
 </pre>
 </details>
 
@@ -130,6 +144,58 @@ aws sso login --profile terraform-admin
 
 ## ToDoアプリ作成
 
+## インフラ構成
+
+### アーキテクチャ概要
+- マルチAZ構成のサーバーレスアプリケーション
+- フロントエンド/バックエンドをECS Fargateで実行
+- プライベートサブネットにRDSを配置
+- ALBを介してアプリケーションにアクセス
+
+### 主要コンポーネント
+
+#### ネットワーク (VPC)
+- 2つのアベイラビリティゾーンに展開
+- パブリックサブネット（10.0.1.0/24, 10.0.2.0/24）
+  - ALBを配置
+  - インターネットゲートウェイ経由で外部通信
+- プライベートサブネット（10.0.101.0/24, 10.0.102.0/24）
+  - ECSタスクとRDSを配置
+  - VPCエンドポイント経由でAWSサービスにアクセス
+
+#### コンピューティング (ECS)
+- ECS Fargateでコンテナを実行
+  - フロントエンドコンテナ (Nginx)
+  - バックエンドコンテナ (Node.js)
+- タスク定義
+  - CPU: 512
+  - メモリ: 1024MB
+- サイドカーパターンでフロントエンド/バックエンドを連携
+
+#### データベース (RDS)
+- エンジン: MySQL 8.0
+- インスタンスクラス: db.t4g.micro
+- ストレージ: 20GB
+- マルチAZ: 無効
+- 自動バックアップ: 有効
+
+#### ロードバランサー (ALB)
+- パブリックサブネットに配置
+- ヘルスチェック: /health
+- ターゲットグループ: IPターゲット
+
+#### セキュリティ
+- セキュリティグループでアクセス制御
+  - ALB: HTTP(80)のみ許可
+  - ECS: ALBからのトラフィックのみ許可
+  - RDS: ECSタスクからのMySQL(3306)のみ許可
+- AWS Secrets Managerでデータベース認証情報を管理
+- GitHub OIDC認証でGitHub Actionsからのデプロイを安全に実行
+
+#### モニタリング
+- CloudWatch Logsでコンテナログを収集
+  - フロントエンド: /ecs/todo-app/frontend
+  - バックエンド: /ecs/todo-app/backend
 
 ## ECRプッシュ
 イメージはx86_64アーキテクチャ(amd64)にする必要がある  
@@ -138,14 +204,15 @@ aws sso login --profile terraform-admin
 ・フロントエンド(本番環境のnginx.confを設定するため、環境変数を設定する)  
 `docker build --build-arg ENV=prd --platform linux/amd64 -t todo-frontend .`  
 
-## Ecsporesso構築
+## Ecspresso構築
 タスク/サービスはjson形式で記載。  
 ecspresso は内部的に YAML を読み込んでから JSON に変換して処理します（なぜなら AWS の API は JSON を受け取るため）。  
 yamlからjsonjに変換する際に、構文的には正しくても ecspresso 側が誤解釈する値がある。  
 YAML の中に - を含む値などが該当する。  
 基本的にawsのリソースIDは[-]が含まれるケースが多いため、jsonを使用  
 
-・ecspressoのデプロイ
+・ecspressoのデプロイ  
+`ecspresso deploy --config .ecspresso/config.yml`  
 
 ・サービス削除  
 1.サービスをスケールダウン（desiredCount = 0）  
