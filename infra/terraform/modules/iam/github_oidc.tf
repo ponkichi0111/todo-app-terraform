@@ -31,5 +31,5 @@ resource "aws_iam_role" "github_actions" {
 
 resource "aws_iam_role_policy_attachment" "github_actions" {
   role       = aws_iam_role.github_actions.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # 必要な権限に応じて変更
+  policy_arn = "arn:aws:iam::aws:policy/PowerUserAccess" # 必要な権限に応じて変更
 }
