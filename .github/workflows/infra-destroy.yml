@@ -1,0 +1,57 @@
+name: Destroy Infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: '本当に全てのインフラを削除しますか？ "yes" と入力して確認してください'
+        required: true
+        type: string
+
+env:
+  AWS_REGION: ap-northeast-1
+  TF_STATE_BUCKET: terraform-state-todo-app
+  TF_LOCK_TABLE: terraform-state-lock
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: 確認チェック
+        if: github.event.inputs.confirm != 'yes'
+        run: |
+          echo "削除を実行するには 'yes' と入力してください"
+          exit 1
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: |
+          cd infra/terraform/app
+          terraform init \
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
+            -backend-config="key=terraform.tfstate" \
+            -backend-config="region=${{ env.AWS_REGION }}" \
+            -backend-config="dynamodb_table=${{ env.TF_LOCK_TABLE }}"
+
+      - name: Terraform Destroy
+        run: |
+          cd infra/terraform/app
+          terraform destroy -auto-approve

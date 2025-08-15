@@ -1,0 +1,76 @@
+name: Deploy Application
+
+on:
+  workflow_dispatch:  # 手動実行を追加
+  push:
+    paths:
+      - "app/**"
+    branches:
+      - master
+
+env:
+  AWS_REGION: ap-northeast-1
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+          # 認証情報の有効期限を1時間に設定
+          role-duration-seconds: 3600
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+          terraform_wrapper: false
+
+      - name: Cache Terraform
+        uses: actions/cache@v3
+        with:
+          path: |
+            .terraform
+            ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf', '**/terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+
+      - name: Install ecspresso
+        run: |
+          brew install kayac/tap/ecspresso
+
+      - name: Get Terraform Outputs
+        id: terraform-output
+        run: |
+          cd infra/terraform/app
+          terraform init
+          echo "outputs=$(terraform output -json)" >> $GITHUB_OUTPUT
+
+      - name: Generate Definitions
+        run: |
+          chmod +x scripts/*.sh
+          ./scripts/gen-service-def.sh
+          ./scripts/gen-task-def.sh
+        env:
+          TF_OUTPUT: ${{ steps.terraform-output.outputs.outputs }}
+
+      - name: Deploy to ECS
+        id: deploy
+        run: |
+          set -e
+          ecspresso deploy --config .ecspresso/config.yml || {
+            echo "::error::Deployment failed"
+            exit 1
+          }
