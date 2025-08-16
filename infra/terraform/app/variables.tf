@@ -71,7 +71,7 @@ variable "alb_target_port" {
 variable "alb_health_check_path" {
   description = "Health check path for ALB"
   type        = string
-  default     = "/"
+  default     = "/health"
 }
 
 variable "cluster_name" {
