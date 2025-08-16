@@ -62,5 +62,4 @@ module "iam" {
 
   rds_master_secret_arn  = module.rds.rds_master_secret_arn
   ecs_app_task_role_name = var.ecs_app_task_role_name
-  github_repository      = var.github_repository
 }

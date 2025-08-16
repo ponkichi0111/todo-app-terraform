@@ -9,3 +9,8 @@ variable "frontend_repo_name" {
   type        = string
   default     = "todo-frontend"
 }
+
+variable "github_repository" {
+  description = "GitHub repository for OIDC authentication"
+  type        = string
+}
