@@ -15,8 +15,8 @@ on:
 
 env:
   AWS_REGION: ap-northeast-1
-  TF_STATE_BUCKET: terraform-state-todo-app
-  TF_LOCK_TABLE: terraform-state-lock
+  TF_STATE_BUCKET: terraform-state-todo-app-hiroyuki 
+  TF_LOCK_TABLE: terraform-lock
 
 jobs:
   terraform:
@@ -32,7 +32,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/todo-github-actions-role
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
