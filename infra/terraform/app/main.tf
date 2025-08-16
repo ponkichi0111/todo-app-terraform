@@ -58,7 +58,7 @@ module "cloudwatchlogs" {
 }
 
 module "iam" {
-  source = "../modules/iam/main.tf"
+  source = "../modules/iam"
 
   rds_master_secret_arn  = module.rds.rds_master_secret_arn
   ecs_app_task_role_name = var.ecs_app_task_role_name
