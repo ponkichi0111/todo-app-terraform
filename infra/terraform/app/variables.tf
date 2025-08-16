@@ -63,6 +63,7 @@ variable "db_identifier" {
 }
 
 variable "alb_target_port" {
+  description = "Target port for ALB"
   type    = number
   default = 80
 }
