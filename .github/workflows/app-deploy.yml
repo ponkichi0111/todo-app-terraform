@@ -74,7 +74,7 @@ jobs:
       - name: Assert secret references are valid
         run: |
           set -euo pipefail
-          FILE=.ecspresso/taskdef.json   # ← ファイル名を統一
+          FILE=.ecspresso/task-def.json   # ← ファイル名を統一
           test -f "$FILE"
 
           # secrets の valueFrom を一度だけ取得
