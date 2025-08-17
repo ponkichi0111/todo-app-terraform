@@ -59,7 +59,7 @@ jobs:
 
       - name: Create tfvars file
         run: |
-          cat << EOF > terraform.tfvars
+          cat << EOF > infra/terraform/app/terraform.tfvars
           name_prefix   = "${{ secrets.NAME_PREFIX }}"
           db_identifier = "${{ secrets.DB_IDENTIFIER }}"
           db_name       = "${{ secrets.DB_NAME }}"
