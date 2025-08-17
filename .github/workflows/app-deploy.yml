@@ -87,43 +87,11 @@ jobs:
           ./scripts/gen-service-def.sh
           ./scripts/gen-task-def.sh
 
-      - name: Show taskdef secrets
+      - name: Deploy to ECS
+        id: deploy
         run: |
-          jq -r '.containerDefinitions[].secrets[]?| "\(.name)=\(.valueFrom)"' .ecspresso/task-def.json
-
-      - name: Assert secret references are valid
-        run: |
-          set -euo pipefail
-          FILE=.ecspresso/task-def.json   # ← ファイル名を統一
-          test -f "$FILE"
-
-          # secrets の valueFrom を一度だけ取得
-          SECRET_VALUES=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' "$FILE")
-          TOTAL=$(jq '[.containerDefinitions[].secrets[]?] | length' "$FILE")
-
-          # secrets が無ければスキップ
-          if [ "$TOTAL" -eq 0 ]; then
-            echo "No secrets in taskdef (skip check)"
-            exit 0
-          fi
-
-          # Secrets Manager ARN か SSM Parameter のどちらかに一致した数を数える
-          ARNS_OK=$(echo "$SECRET_VALUES" | awk '/^arn:aws:secretsmanager:/{c++} END{print c+0}')
-          SSM_OK=$(echo "$SECRET_VALUES" | awk '/^\//{c++} END{print c+0}')
-
-          if [ $((ARNS_OK + SSM_OK)) -ne "$TOTAL" ]; then
-            echo "::group::Invalid secret references"
-            echo "$SECRET_VALUES" | grep -vE '^arn:aws:secretsmanager:|^/' || true
-            echo "::endgroup::"
-            echo "::error::Invalid secret reference(s). Expected Secrets Manager ARN (arn:aws:secretsmanager:...) or SSM parameter path (/...)."
+          set -e
+          ecspresso deploy --config .ecspresso/config.yml || {
+            echo "::error::Deployment failed"
             exit 1
-          fi
-
-      # - name: Deploy to ECS
-      #   id: deploy
-      #   run: |
-      #     set -e
-      #     ecspresso deploy --config .ecspresso/config.yml || {
-      #       echo "::error::Deployment failed"
-      #       exit 1
-      #     }
+          }
