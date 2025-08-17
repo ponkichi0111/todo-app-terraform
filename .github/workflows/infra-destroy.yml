@@ -60,7 +60,14 @@ jobs:
           db_username   = "${{ secrets.DB_USERNAME }}"
           EOF
 
+      # Removed step: Create tfvars file
+
       - name: Terraform Destroy
+        env:
+          TF_VAR_name_prefix: ${{ secrets.NAME_PREFIX }}
+          TF_VAR_db_identifier: ${{ secrets.DB_IDENTIFIER }}
+          TF_VAR_db_name: ${{ secrets.DB_NAME }}
+          TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
         run: |
           cd infra/terraform/app
           terraform destroy -auto-approve
