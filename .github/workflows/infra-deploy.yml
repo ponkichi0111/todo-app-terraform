@@ -73,12 +73,18 @@ jobs:
         id: plan
         run: |
           cd infra/terraform/app
+          set +e
           terraform plan -detailed-exitcode -out=tfplan
-        continue-on-error: true
+          CODE=$?
+          echo "code=$CODE" >> "$GITHUB_OUTPUT"   # 0:差分なし / 1:失敗 / 2:差分あり
+          echo "Terraform plan exit code: $CODE"
+          exit 0
 
       - name: Terraform Plan Status
-        if: steps.plan.outcome == 'failure'
-        run: exit 1
+        if: steps.plan.outputs.code == '1'
+        run: |
+          echo "terraform plan failed (exit 1)"
+          exit 1
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
