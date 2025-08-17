@@ -5,7 +5,7 @@ ECS Fargateを使用したコンテナベースのToDoアプリケーション�
 - フロントエンド: HTML/JavaScript + Nginx
 - バックエンド: Node.js
 - データベース: MySQL 8.0
-- インフラ: AWS (ECS, RDS, ALB)
+- インフラ: AWS (ECS)
 - IaC: Terraform
 - CI/CD: GitHub Actions
 
@@ -18,7 +18,8 @@ ECS Fargateを使用したコンテナベースのToDoアプリケーション�
 │   └── pull_request_template.md
 │   └── workflows
 │       ├── app-deploy.yml
-│       └── infra-deploy.yml
+│       ├── infra-deploy.yml
+│       └── infra-destroy.yml
 ├── .ecspresso
 │   ├── config.yml
 │   ├── service-def.json
@@ -81,8 +82,10 @@ ECS Fargateを使用したコンテナベースのToDoアプリケーション�
 │       │   │   ├── main.tf
 │       │   │   ├── output.tf
 │       │   │   └── variables.tf
+│       │   ├── github_oidc
+│       │   │   ├── main.tf
+│       │   │   └── variables.tf
 │       │   ├── iam
-│       │   │   ├── github_oidc.tf
 │       │   │   ├── main.tf
 │       │   │   ├── output.tf
 │       │   │   └── variables.tf
@@ -110,7 +113,7 @@ ECS Fargateを使用したコンテナベースのToDoアプリケーション�
 │       │   ├── terraform.tfvars
 │       │   └── variables.tf
 │       └── terraform.tfstate
-│── scripts
+├── scripts
 │   ├── gen-nginx-conf.sh
 │   ├── gen-service-def.sh
 │   └── gen-task-def.sh
