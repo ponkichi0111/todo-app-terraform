@@ -55,9 +55,15 @@ jobs:
       - name: Get Terraform Outputs
         id: terraform-output
         run: |
-          cd infra/terraform/app
-          terraform init
-          echo "outputs=$(terraform output -json)" >> $GITHUB_OUTPUT
+          terraform -chdir=infra/terraform/app init -input=false -reconfigure \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="key=terraform.tfstate" \
+            -backend-config="region=${{ env.AWS_REGION }}" \
+            -backend-config="dynamodb_table=${{ secrets.TF_LOCK_TABLE }}"
+          terraform -chdir=infra/terraform/app output -json | tee /tmp/tfout.json
+          echo "outputs=$(cat /tmp/tfout.json)" >> $GITHUB_OUTPUT
+          echo "db_master_user_secret_arn:"
+          jq -r '.db_master_user_secret_arn.value // "<missing>"' /tmp/tfout.json
 
       - name: Generate Definitions
         run: |
