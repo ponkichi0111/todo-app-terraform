@@ -46,8 +46,8 @@ module "alb" {
 }
 
 module "ecs" {
-  source          = "../modules/ecs"
-  cluster_name    = var.cluster_name
+  source       = "../modules/ecs"
+  cluster_name = var.cluster_name
 }
 
 module "cloudwatchlogs" {
