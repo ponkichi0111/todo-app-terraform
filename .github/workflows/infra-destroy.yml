@@ -10,7 +10,7 @@ on:
 
 env:
   AWS_REGION: ap-northeast-1
-  TF_STATE_BUCKET: terraform-state-todo-app
+  TF_STATE_BUCKET: terraform-state-todo-app-hiroyuki 
   TF_LOCK_TABLE: terraform-state-lock
 
 jobs:
