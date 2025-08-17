@@ -74,7 +74,7 @@ jobs:
       - name: Assert secret references are valid
         run: |
           ARNS_OK=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' .ecspresso/taskdef.json |
-            awk '/^arn:aws:secretsmanager:/{c++} END{print c+0}')
+            awk '/^arn:aws:(secretsmanager|ssm):/{c++} END{print c+0}')
           SSM_OK=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' .ecspresso/taskdef.json |
           SECRET_VALUES=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' .ecspresso/taskdef.json)
           ARNS_OK=$(echo "$SECRET_VALUES" | awk '/^arn:aws:secretsmanager:/{c++} END{print c+0}')
