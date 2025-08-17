@@ -59,7 +59,7 @@ jobs:
         run: |
           terraform -chdir=infra/terraform/app init -input=false -reconfigure \
             -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
-            -backend-config="key=terraform.tfstate" \
+            -backend-config="key=app/terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}" \
             -backend-config="dynamodb_table=${{ env.TF_LOCK_TABLE }}"
           ONE_LINE=$(terraform -chdir=infra/terraform/app output -json | jq -c .)
@@ -70,10 +70,9 @@ jobs:
         run: |
           terraform -chdir=infra/terraform/shared init -input=false -reconfigure \
             -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
-            -backend-config="key=terraform.tfstate" \
+            -backend-config="key=shared/terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}" \
             -backend-config="dynamodb_table=${{ env.TF_LOCK_TABLE }}"
-          terraform -chdir=infra/terraform/app output -json | tee /tmp/tfout.json
           ONE_LINE=$(terraform -chdir=infra/terraform/shared output -json | jq -c .)
           echo "outputs=$ONE_LINE" >> "$GITHUB_OUTPUT"
 
@@ -90,39 +89,39 @@ jobs:
         run: |
           jq -r '.containerDefinitions[].secrets[]?| "\(.name)=\(.valueFrom)"' .ecspresso/task-def.json
 
-      # - name: Assert secret references are valid
-      #   run: |
-      #     set -euo pipefail
-      #     FILE=.ecspresso/task-def.json   # ← ファイル名を統一
-      #     test -f "$FILE"
+      - name: Assert secret references are valid
+        run: |
+          set -euo pipefail
+          FILE=.ecspresso/task-def.json   # ← ファイル名を統一
+          test -f "$FILE"
 
-      #     # secrets の valueFrom を一度だけ取得
-      #     SECRET_VALUES=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' "$FILE")
-      #     TOTAL=$(jq '[.containerDefinitions[].secrets[]?] | length' "$FILE")
+          # secrets の valueFrom を一度だけ取得
+          SECRET_VALUES=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' "$FILE")
+          TOTAL=$(jq '[.containerDefinitions[].secrets[]?] | length' "$FILE")
 
-      #     # secrets が無ければスキップ
-      #     if [ "$TOTAL" -eq 0 ]; then
-      #       echo "No secrets in taskdef (skip check)"
-      #       exit 0
-      #     fi
+          # secrets が無ければスキップ
+          if [ "$TOTAL" -eq 0 ]; then
+            echo "No secrets in taskdef (skip check)"
+            exit 0
+          fi
 
-      #     # Secrets Manager ARN か SSM Parameter のどちらかに一致した数を数える
-      #     ARNS_OK=$(echo "$SECRET_VALUES" | awk '/^arn:aws:secretsmanager:/{c++} END{print c+0}')
-      #     SSM_OK=$(echo "$SECRET_VALUES" | awk '/^\//{c++} END{print c+0}')
+          # Secrets Manager ARN か SSM Parameter のどちらかに一致した数を数える
+          ARNS_OK=$(echo "$SECRET_VALUES" | awk '/^arn:aws:secretsmanager:/{c++} END{print c+0}')
+          SSM_OK=$(echo "$SECRET_VALUES" | awk '/^\//{c++} END{print c+0}')
 
-      #     if [ $((ARNS_OK + SSM_OK)) -ne "$TOTAL" ]; then
-      #       echo "::group::Invalid secret references"
-      #       echo "$SECRET_VALUES" | grep -vE '^arn:aws:secretsmanager:|^/' || true
-      #       echo "::endgroup::"
-      #       echo "::error::Invalid secret reference(s). Expected Secrets Manager ARN (arn:aws:secretsmanager:...) or SSM parameter path (/...)."
-      #       exit 1
-      #     fi
+          if [ $((ARNS_OK + SSM_OK)) -ne "$TOTAL" ]; then
+            echo "::group::Invalid secret references"
+            echo "$SECRET_VALUES" | grep -vE '^arn:aws:secretsmanager:|^/' || true
+            echo "::endgroup::"
+            echo "::error::Invalid secret reference(s). Expected Secrets Manager ARN (arn:aws:secretsmanager:...) or SSM parameter path (/...)."
+            exit 1
+          fi
 
-      # - name: Deploy to ECS
-      #   id: deploy
-      #   run: |
-      #     set -e
-      #     ecspresso deploy --config .ecspresso/config.yml || {
-      #       echo "::error::Deployment failed"
-      #       exit 1
-      #     }
+      - name: Deploy to ECS
+        id: deploy
+        run: |
+          set -e
+          ecspresso deploy --config .ecspresso/config.yml || {
+            echo "::error::Deployment failed"
+            exit 1
+          }
