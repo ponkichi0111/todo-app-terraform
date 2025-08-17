@@ -73,7 +73,7 @@ jobs:
             -backend-config="key=terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}" \
             -backend-config="dynamodb_table=${{ env.TF_LOCK_TABLE }}"
-          terraform -chdir=infra/terraform/app output -json | tee /tmp/tfout.json
+          terraform -chdir=infra/terraform/shared output -json | tee /tmp/tfout.json
           ONE_LINE=$(terraform -chdir=infra/terraform/shared output -json | jq -c .)
           echo "outputs=$ONE_LINE" >> "$GITHUB_OUTPUT"
 
