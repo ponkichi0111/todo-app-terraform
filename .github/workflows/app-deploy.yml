@@ -67,6 +67,25 @@ jobs:
         env:
           TF_OUTPUT: ${{ steps.terraform-output.outputs.outputs }}
 
+      - name: Show taskdef secrets
+        run: |
+          jq -r '.containerDefinitions[].secrets[]?| "\(.name)=\(.valueFrom)"' .ecspresso/taskdef.json
+
+      - name: Assert secret references are valid
+        run: |
+          ARNS_OK=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' .ecspresso/taskdef.json |
+            awk '/^arn:aws:(secretsmanager|ssm):/{c++} END{print c+0}')
+          SSM_OK=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' .ecspresso/taskdef.json |
+          SECRET_VALUES=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' .ecspresso/taskdef.json)
+          ARNS_OK=$(echo "$SECRET_VALUES" | awk '/^arn:aws:secretsmanager:/{c++} END{print c+0}')
+          SSM_OK=$(echo "$SECRET_VALUES" | awk '/^\//{c++} END{print c+0}')
+          TOTAL=$(jq '[.containerDefinitions[].secrets[]?] | length' .ecspresso/taskdef.json)
+          [ $((ARNS_OK+SSM_OK)) -eq "$TOTAL" ] || { echo "::error::invalid valueFrom found"; exit 1; }
+          if [ $((ARNS_OK+SSM_OK)) -ne "$TOTAL" ]; then
+            INVALIDS=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' .ecspresso/taskdef.json | grep -vE '^arn:aws:secretsmanager:|^/')
+            echo "::error::Invalid secret reference(s) found: $INVALIDS. Expected ARN format 'arn:aws:secretsmanager:...' or SSM parameter format '/...'"
+            exit 1
+          fi
       - name: Deploy to ECS
         id: deploy
         run: |
