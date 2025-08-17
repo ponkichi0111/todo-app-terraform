@@ -64,8 +64,8 @@ jobs:
             -backend-config="dynamodb_table=${{ env.TF_LOCK_TABLE }}"
           terraform -chdir=infra/terraform/app output -json | tee /tmp/tfout.json
           echo "outputs=$(cat /tmp/tfout.json)" >> $GITHUB_OUTPUT
-          echo "db_master_user_secret_arn:"
-          jq -r '.db_master_user_secret_arn.value // "<missing>"' /tmp/tfout.json
+          echo "rds_master_secret_arn:"
+          jq -r '.rds_master_secret_arn.value // "<missing>"' /tmp/tfout.json
 
       - name: Generate Definitions
         run: |
