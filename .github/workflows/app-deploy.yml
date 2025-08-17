@@ -55,7 +55,7 @@ jobs:
           version: v2.6.0 
 
       - name: Get Terraform Outputs
-        id: terraform-output
+        id: terraform-output-app
         run: |
           terraform -chdir=infra/terraform/app init -input=false -reconfigure \
             -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
@@ -65,13 +65,25 @@ jobs:
           ONE_LINE=$(terraform -chdir=infra/terraform/app output -json | jq -c .)
           echo "outputs=$ONE_LINE" >> "$GITHUB_OUTPUT"
 
+      - name: Get Terraform Outputs
+        id: terraform-output-shared
+        run: |
+          terraform -chdir=infra/terraform/shared init -input=false -reconfigure \
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
+            -backend-config="key=terraform.tfstate" \
+            -backend-config="region=${{ env.AWS_REGION }}" \
+            -backend-config="dynamodb_table=${{ env.TF_LOCK_TABLE }}"
+          ONE_LINE=$(terraform -chdir=infra/terraform/shared output -json | jq -c .)
+          echo "outputs=$ONE_LINE" >> "$GITHUB_OUTPUT"
+
       - name: Generate Definitions
+        env:
+          TF_OUTPUT_APP: ${{ steps.terraform-output-app.outputs.outputs }}
+          TF_OUTPUT_SHARED: ${{ steps.terraform-output-shared.outputs.outputs }}
         run: |
           chmod +x scripts/*.sh
           ./scripts/gen-service-def.sh
           ./scripts/gen-task-def.sh
-        env:
-          TF_OUTPUT: ${{ steps.terraform-output.outputs.outputs }}
 
       - name: Show taskdef secrets
         run: |
