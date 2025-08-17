@@ -93,7 +93,7 @@ jobs:
 
           if [ $((ARNS_OK + SSM_OK)) -ne "$TOTAL" ]; then
             echo "::group::Invalid secret references"
-            echo "$SECRET_VALUES" | grep -vE '^arn:aws:secretsmanager:|^/' || true
+            [ -n "$SECRET_VALUES" ] && echo "$SECRET_VALUES" | grep -vE '^arn:aws:secretsmanager:|^/' || true
             echo "::endgroup::"
             echo "::error::Invalid secret reference(s). Expected Secrets Manager ARN (arn:aws:secretsmanager:...) or SSM parameter path (/...)."
             exit 1
