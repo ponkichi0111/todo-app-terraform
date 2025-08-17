@@ -173,7 +173,6 @@ aws sso login --profile terraform-admin
 - タスク定義
   - CPU: 512
   - メモリ: 1024MB
-- サイドカーパターンでフロントエンド/バックエンドを連携
 
 #### データベース (RDS)
 - エンジン: MySQL 8.0
@@ -193,7 +192,7 @@ aws sso login --profile terraform-admin
   - ECS: ALBからのトラフィックのみ許可
   - RDS: ECSタスクからのMySQL(3306)のみ許可
 - AWS Secrets Managerでデータベース認証情報を管理
-- GitHub OIDC認証でGitHub Actionsからのデプロイを安全に実行
+- GitHub OIDC認証でGitHub Actionsからのデプロイを実行
 
 #### モニタリング
 - CloudWatch Logsでコンテナログを収集
