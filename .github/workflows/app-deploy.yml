@@ -48,10 +48,9 @@ jobs:
             ${{ runner.os }}-terraform-
 
       - name: Install ecspresso
-        run: |
-          wget -O ecspresso https://github.com/kayac/ecspresso/releases/download/v1.5.5/ecspresso_1.5.5_linux_amd64
-          chmod +x ecspresso
-          sudo mv ecspresso /usr/local/bin/
+        uses: kayac/ecspresso@v2
+        with:
+          version: v2.6.0 
 
       - name: Get Terraform Outputs
         id: terraform-output
