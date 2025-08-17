@@ -62,10 +62,8 @@ jobs:
             -backend-config="key=terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}" \
             -backend-config="dynamodb_table=${{ env.TF_LOCK_TABLE }}"
-          terraform -chdir=infra/terraform/app output -json | tee /tmp/tfout.json
-          echo "outputs=$(cat /tmp/tfout.json)" >> $GITHUB_OUTPUT
-          echo "rds_master_secret_arn:"
-          jq -r '.rds_master_secret_arn.value // "<missing>"' /tmp/tfout.json
+          ONE_LINE=$(terraform -chdir=infra/terraform/app output -json | jq -c .)
+          echo "outputs=$ONE_LINE" >> "$GITHUB_OUTPUT"
 
       - name: Generate Definitions
         run: |
