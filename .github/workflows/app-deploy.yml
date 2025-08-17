@@ -76,7 +76,9 @@ jobs:
           ARNS_OK=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' .ecspresso/taskdef.json |
             awk '/^arn:aws:secretsmanager:/{c++} END{print c+0}')
           SSM_OK=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' .ecspresso/taskdef.json |
-            awk '/^\//{c++} END{print c+0}')
+          SECRET_VALUES=$(jq -r '.containerDefinitions[].secrets[]?.valueFrom' .ecspresso/taskdef.json)
+          ARNS_OK=$(echo "$SECRET_VALUES" | awk '/^arn:aws:secretsmanager:/{c++} END{print c+0}')
+          SSM_OK=$(echo "$SECRET_VALUES" | awk '/^\//{c++} END{print c+0}')
           TOTAL=$(jq '[.containerDefinitions[].secrets[]?] | length' .ecspresso/taskdef.json)
           [ $((ARNS_OK+SSM_OK)) -eq "$TOTAL" ] || { echo "::error::invalid valueFrom found"; exit 1; }
           if [ $((ARNS_OK+SSM_OK)) -ne "$TOTAL" ]; then
