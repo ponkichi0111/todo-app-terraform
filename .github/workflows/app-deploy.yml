@@ -62,6 +62,7 @@ jobs:
             -backend-config="key=app/terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}" \
             -backend-config="dynamodb_table=${{ env.TF_LOCK_TABLE }}"
+          terraform -chdir=infra/terraform/app output -json
           ONE_LINE=$(terraform -chdir=infra/terraform/app output -json | jq -c .)
           echo "outputs=$ONE_LINE" >> "$GITHUB_OUTPUT"
 
@@ -73,6 +74,7 @@ jobs:
             -backend-config="key=shared/terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}" \
             -backend-config="dynamodb_table=${{ env.TF_LOCK_TABLE }}"
+          terraform -chdir=infra/terraform/shared output -json
           ONE_LINE=$(terraform -chdir=infra/terraform/shared output -json | jq -c .)
           echo "outputs=$ONE_LINE" >> "$GITHUB_OUTPUT"
 
@@ -117,11 +119,11 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy to ECS
-        id: deploy
-        run: |
-          set -e
-          ecspresso deploy --config .ecspresso/config.yml || {
-            echo "::error::Deployment failed"
-            exit 1
-          }
+      # - name: Deploy to ECS
+      #   id: deploy
+      #   run: |
+      #     set -e
+      #     ecspresso deploy --config .ecspresso/config.yml || {
+      #       echo "::error::Deployment failed"
+      #       exit 1
+      #     }
