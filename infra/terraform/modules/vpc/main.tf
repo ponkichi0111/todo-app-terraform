@@ -1,4 +1,10 @@
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+locals {
+  az_ids = data.aws_availability_zones.available.zone_ids
+}
 
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
@@ -19,26 +25,15 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_subnet" "public" {
-  count                   = length(var.public_subnet_cidrs)
+  for_each = { for i, cidr in var.public_subnet_cidrs : i => cidr }
+
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.public_subnet_cidrs[count.index]
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  cidr_block              = each.value
+  availability_zone_id    = local.az_ids[tonumber(each.key) % length(local.az_ids)]
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${var.name_prefix}-public-${count.index + 1}"
-  }
-}
-
-resource "aws_subnet" "private" {
-  count                   = length(var.private_subnet_cidrs)
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.private_subnet_cidrs[count.index]
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
-  map_public_ip_on_launch = false
-
-  tags = {
-    Name = "${var.name_prefix}-private-${count.index + 1}"
+    Name = "${var.name_prefix}-public-${tonumber(each.key) + 1}"
   }
 }
 
@@ -57,9 +52,22 @@ resource "aws_route" "internet_access" {
 }
 
 resource "aws_route_table_association" "public" {
-  count          = length(aws_subnet.public)
-  subnet_id      = aws_subnet.public[count.index].id
+  for_each       = aws_subnet.public
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.public.id
+}
+
+resource "aws_subnet" "private" {
+  for_each = { for i, cidr in var.private_subnet_cidrs : i => cidr }
+
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = each.value
+  availability_zone_id    = local.az_ids[tonumber(each.key) % length(local.az_ids)]
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "${var.name_prefix}-private-${tonumber(each.key) + 1}"
+  }
 }
 
 resource "aws_route_table" "private" {
@@ -71,7 +79,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private" {
-  count          = length(aws_subnet.private)
-  subnet_id      = aws_subnet.private[count.index].id
+  for_each       = aws_subnet.private
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.private.id
 }
