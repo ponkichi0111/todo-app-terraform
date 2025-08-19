@@ -7,6 +7,6 @@
 *.env.*
 task-def.json
 service-def.json
-nginx.conf
+nginx.conf.tpl
 nginx-prd.conf
 nginx-dev.conf
