@@ -2,7 +2,7 @@
 ECS Fargateを使用したコンテナベースのToDoアプリケーションを作成
 
 ## 技術スタック
-- フロントエンド: HTML/JavaScript + Nginx
+- フロントエンド: HTML/JavaScript
 - バックエンド: Node.js
 - データベース: MySQL 8.0
 - インフラ: AWS (ECS)
@@ -139,13 +139,11 @@ ECS Fargateを使用したコンテナベースのToDoアプリケーション�
   ```
 
 3. **SSOに接続**
+ローカルから実行する際に必要  
 ```
 export AWS_PROFILE=terraform-admin
 aws sso login --profile terraform-admin
 ```
-
-
-## ToDoアプリ作成
 
 ## インフラ構成
 
